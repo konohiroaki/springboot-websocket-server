@@ -1,20 +1,21 @@
 package sample;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
+@Service
 public class SimpleServerWebSocketHandler extends TextWebSocketHandler {
 
-    private Map<String, WebSocketSession> sessions = new ConcurrentHashMap<>();
+    @Autowired
+    private RandomTicker randomTicker;
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-        this.sessions.put(session.getId(), session);
+        randomTicker.addSession(session);
     }
 
     @Override
@@ -22,15 +23,13 @@ public class SimpleServerWebSocketHandler extends TextWebSocketHandler {
         String payload = message.getPayload();
 
         if (!payload.isEmpty()) {
-            for (Map.Entry<String, WebSocketSession> entry : sessions.entrySet()) {
-                entry.getValue().sendMessage(new TextMessage("Server received : " + payload));
-            }
+            randomTicker.broadcast("Server received : " + payload);
         }
 
     }
 
     @Override
-    public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-        this.sessions.remove(session.getId());
+    public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
+        randomTicker.removeSession(session.getId());
     }
 }
