@@ -21,7 +21,7 @@ You can use [springboot-javafx-websocket-client](https://github.com/konohiroaki/
 When you need a jar file, run
 
 ```
-mvn jfx:jar
+mvn clean package
 ```
 
 and then run
@@ -30,7 +30,7 @@ and then run
 java -jar the-jar-file.jar
 ```
 
-### Fork me
+### Fork me!
 * For creating a new server using websocket
 * For testing your websocket client
 * For something awesome!
